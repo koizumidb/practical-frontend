@@ -41,13 +41,14 @@ jobs:
 
       #3
       - name: Zip artifact for deployment
-        run: zip release.zip ./deploy -r
+        run: |
+          zip -r release.zip deploy
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
         with:
           name: node-app
-          path: .
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -59,11 +60,14 @@ jobs:
         with:
           name: node-app
 
+      - name: List files
+        run: ls -la
+
       - name: "Deploy to Azure Web App"
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
           app-name: "tech0-gen-11-step3-2-node-61"
           slot-name: "Production"
-          package: release.zip #4
+          package: release.zip
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_49A5805E6A744717A688A28AF5F10380 }}
